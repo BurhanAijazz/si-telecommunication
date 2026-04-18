@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    // GitHub Pages SPA redirect
+    // Converts the path into a hash-based route so index.html can handle it.
+    var pathSegmentsToKeep = 1; // Adjust if your repo is at username.github.io/repo-name
+    var l = window.location;
+    var repo = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/');
+    var route = l.pathname.slice(repo.length);
+    // Strip leading slash and .html extension
+    route = route.replace(/^\//, '').replace(/\.html$/, '');
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      repo + '/#' + route + l.search + l.hash
+    );
+  </script>
+</head>
+<body>
+  <p>Redirecting&hellip;</p>
+</body>
+</html>
