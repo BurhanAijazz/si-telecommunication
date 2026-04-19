@@ -411,9 +411,12 @@ function buildSidebar(filter = "") {
         ? '<span class="bookmark-dot"></span>'
         : "";
 
+      const isMock = group.group === "Mock Tests";
+      const tagText = isMock ? "120m" : `${item.marks}m`;
+
       html += `<a class="${classes.join(" ")}" data-id="${item.id}">
         ${bookmarkDot}${item.title}
-        <span class="marks-tag">${item.marks}m</span>
+        <span class="marks-tag">${tagText}</span>
       </a>`;
     });
 
@@ -827,7 +830,39 @@ function createAnswerCard(qNum, ansData) {
 }
 
 /**
+ * Splits inline option paragraphs like "(a) opt1 (b) opt2 (c) opt3 (d) opt4"
+ * into a proper <ul class="mcq-options-list"> for clean stacked display.
+ */
+function splitInlineOptions(container) {
+  const paragraphs = container.querySelectorAll("p");
+  paragraphs.forEach((p) => {
+    const text = p.textContent;
+    // Match paragraphs that have at least 3 of the 4 options inline
+    if (!/([\(\（]a[\)）])/i.test(text)) return;
+    if (!/([\(\（]b[\)）])/i.test(text)) return;
+
+    // Split on option markers (a), (b), (c), (d)
+    const parts = text.split(/(?=\([a-d]\)\s)/i).filter(s => s.trim());
+    if (parts.length < 2) return;
+
+    const items = parts.map(part => {
+      const m = part.match(/^\(([a-d])\)\s*(.*)/is);
+      if (!m) return null;
+      return `<li class="mcq-option-item"><span class="mcq-opt-letter">(${m[1]})</span><span class="mcq-opt-text">${m[2].trim()}</span></li>`;
+    }).filter(Boolean);
+
+    if (items.length < 2) return;
+
+    const ul = document.createElement("ul");
+    ul.className = "mcq-options-list";
+    ul.innerHTML = items.join("");
+    p.replaceWith(ul);
+  });
+}
+
+/**
  * Main MCQ processing pipeline:
+ * 0. Split inline options into stacked list items
  * 1. Parse answer key table → build answers map
  * 2. Inject inline answer reveals after each question
  * 3. Remove the answer key section from the bottom
@@ -835,6 +870,9 @@ function createAnswerCard(qNum, ansData) {
 function processInteractiveMCQs(html) {
   const container = document.createElement("div");
   container.innerHTML = html;
+
+  // Step 0: Split inline option paragraphs into lists
+  splitInlineOptions(container);
 
   // Step 1: Parse the answer key
   const answers = parseAnswerKeyTable(container);

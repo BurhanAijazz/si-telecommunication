@@ -632,8 +632,9 @@ body {
   border-collapse: collapse;
   margin: 16px 0 24px;
   font-size: 14px;
-  overflow-x: auto;
   display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .content thead {
@@ -712,6 +713,48 @@ body {
   margin-bottom: 0;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+
+/* Topic MCQ: stacked options list (replaces inline paragraph) */
+.mcq-options-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mcq-option-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.mcq-option-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-tertiary);
+}
+
+.mcq-opt-letter {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  min-width: 24px;
+}
+
+.mcq-opt-text {
+  flex: 1;
 }
 
 
@@ -1860,7 +1903,10 @@ body {
 /* ================================================
    RESPONSIVE
    ================================================ */
+
+/* --- Tablet / Small Desktop (≤860px) --- */
 @media (max-width: 860px) {
+  /* Sidebar: becomes drawer */
   .sidebar-toggle {
     display: flex;
   }
@@ -1880,16 +1926,14 @@ body {
 
   .main {
     margin-left: 0;
+    padding: 20px 20px 48px;
   }
 
   .header-badge {
     display: none;
   }
 
-  .content h1 {
-    font-size: 24px;
-  }
-
+  /* Dashboard */
   .home-hero h1 {
     font-size: 26px;
   }
@@ -1898,6 +1942,22 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .week-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Content headings */
+  .content h1 {
+    font-size: 24px;
+  }
+
+  /* Action bar */
+  .action-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Resume card */
   .resume-card {
     padding: 14px 16px;
     gap: 12px;
@@ -1911,10 +1971,7 @@ body {
     font-size: 14px;
   }
 
-  .action-bar {
-    flex-wrap: wrap;
-  }
-
+  /* Recent items */
   .recent-item {
     flex-direction: column;
     align-items: flex-start;
@@ -1925,28 +1982,33 @@ body {
     gap: 8px;
   }
 
+  /* Exam bar */
   .exam-bar {
     flex-wrap: wrap;
     padding: 10px 16px;
-    margin: -16px -14px 16px;
+    margin: -20px -20px 20px;
     gap: 8px;
   }
 
   .exam-bar-title {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .exam-bar-timer {
-    margin-left: 0;
+    margin-left: auto;
   }
 
+  /* Exam start page info grid */
   .exam-info-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Exam results */
   .exam-score-card {
     flex-direction: column;
     padding: 24px;
+    gap: 16px;
   }
 
   .exam-results-actions {
@@ -1955,56 +2017,304 @@ body {
   }
 }
 
-@media (max-width: 480px) {
+/* --- Mobile (≤640px) --- */
+@media (max-width: 640px) {
   .main {
-    padding: 16px 14px 48px;
+    padding: 16px 14px 56px;
   }
 
-  .content table {
+  /* Header */
+  .header {
+    padding: 0 14px;
+  }
+
+  .header-title {
+    font-size: 15px;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
     font-size: 12px;
+    margin-bottom: 14px;
   }
 
-  .content td, .content th {
-    padding: 7px 8px;
+  /* Dashboard hero */
+  .home-hero {
+    padding: 24px 14px 20px;
+    border-radius: var(--radius);
   }
 
+  .home-hero h1 {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .home-hero p {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  /* Stats grid: guaranteed 2x2 */
   .stats-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
+  .stat-card {
+    padding: 14px 12px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  /* Progress bar */
+  .progress-section {
+    margin: 16px 0;
+  }
+
+  /* Week grid and bookmark grid: single column */
   .week-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .bookmark-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
+  /* Resume card */
   .resume-card-arrow {
     display: none;
   }
 
-  .home-hero {
-    padding: 32px 12px 24px;
+  /* Recent visited items */
+  .recent-section {
+    margin-top: 20px;
   }
 
-  .home-hero h1 {
+  /* Action bar: full-width buttons */
+  .action-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  /* Content headings */
+  .content h1 {
     font-size: 22px;
+    padding-bottom: 10px;
+  }
+
+  .content h2 {
+    font-size: 18px;
+    margin-top: 28px;
+  }
+
+  .content h3 {
+    font-size: 16px;
+    margin-top: 22px;
+  }
+
+  .content h4 {
+    font-size: 14px;
+  }
+
+  /* Content text */
+  .content p,
+  .content li {
+    font-size: 14px;
+  }
+
+  /* Tables: force horizontal scroll */
+  .content table {
+    font-size: 12px;
+    min-width: 480px;
+  }
+
+  .content td,
+  .content th {
+    padding: 7px 8px;
+  }
+
+  /* MCQ cards (reveal answer toggles) */
+  .mcq-card {
+    margin: 8px 0;
+  }
+
+  .mcq-card summary {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
+  /* Exam start page */
+  .exam-start-page {
+    margin: 16px auto;
   }
 
   .exam-start-title {
     font-size: 20px;
   }
 
-  .exam-results-stats {
-    grid-template-columns: 1fr;
+  .exam-start-sub {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .exam-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .exam-info-item {
+    padding: 12px 6px;
+  }
+
+  .exam-info-value {
+    font-size: 18px;
+  }
+
+  .exam-start-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+    font-size: 16px;
+  }
+
+  /* Exam bar: compact 2-line layout */
+  .exam-bar {
+    padding: 8px 14px;
+    margin: -16px -14px 16px;
+    row-gap: 6px;
+    column-gap: 8px;
+  }
+
+  .exam-bar-title {
+    width: 100%;
+    font-size: 13px;
+    white-space: normal;
+  }
+
+  .exam-bar-timer {
+    font-size: 17px;
+    margin-left: 0;
+    padding: 3px 10px;
+  }
+
+  .exam-bar-progress {
+    font-size: 12px;
+  }
+
+  .exam-bar-submit {
+    padding: 6px 14px;
+    font-size: 12px;
+    margin-left: auto;
+  }
+
+  /* Exam questions */
+  .exam-question {
+    padding: 14px 12px;
+  }
+
+  .exam-question-text {
+    font-size: 14px;
+  }
+
+  .exam-option {
+    padding: 9px 12px;
+    gap: 8px;
+  }
+
+  .exam-option-text {
+    font-size: 13px;
+  }
+
+  .exam-section-header {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .exam-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+  }
+
+  /* Exam results */
+  .exam-results-header h1 {
+    font-size: 22px;
+  }
+
+  .exam-score-card {
+    padding: 20px 16px;
   }
 
   .exam-score-value {
     font-size: 36px;
   }
+
+  .exam-score-pct {
+    font-size: 22px;
+    padding: 6px 16px;
+  }
+
+  .exam-results-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .exam-rstat {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .exam-rstat-value {
+    font-size: 22px;
+  }
+
+  .exam-detail-heading {
+    font-size: 16px;
+  }
+
+  .exam-retake-btn,
+  .exam-home-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px 24px;
+  }
 }
+
+/* --- Very small (≤380px) --- */
+@media (max-width: 380px) {
+  .home-hero h1 {
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .exam-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .exam-info-value {
+    font-size: 16px;
+  }
+}
+
+
 
 
 /* ================================================
