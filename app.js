@@ -902,6 +902,8 @@ function processInteractiveMCQs(html) {
 // --- Exam State ---
 const examState = {
   active: false,
+  paused: false,
+  accumulatedTime: 0,
   testData: null,
   userAnswers: {},
   startTime: null,
@@ -1056,6 +1058,8 @@ function renderMockTestStart(testData) {
 
 function startExam(testData) {
   examState.active = true;
+  examState.paused = false;
+  examState.accumulatedTime = 0;
   examState.testData = testData;
   examState.userAnswers = {};
   examState.startTime = Date.now();
@@ -1070,6 +1074,7 @@ function startExam(testData) {
   bar.innerHTML = `
     <span class="exam-bar-title">${testData.title}</span>
     <span class="exam-bar-timer" id="exam-timer">${formatTime(testData.duration * 60)}</span>
+    <button class="exam-bar-pause" id="exam-bar-pause">⏸️ Pause</button>
     <span class="exam-bar-progress" id="exam-progress">0 / ${testData.questions.length} answered</span>
     <button class="exam-bar-submit" id="exam-bar-submit">Submit Test</button>
   `;
@@ -1087,6 +1092,7 @@ function startExam(testData) {
   examState.timerId = setInterval(updateExamTimer, 1000);
 
   // Attach submit handler
+  document.getElementById("exam-bar-pause").addEventListener("click", toggleExamPause);
   document.getElementById("exam-bar-submit").addEventListener("click", confirmSubmit);
 
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -1165,8 +1171,33 @@ function updateExamProgress() {
 
 // ---- Timer ----
 
+function toggleExamPause() {
+  if (!examState.active) return;
+  
+  const btn = document.getElementById("exam-bar-pause");
+  if (examState.paused) {
+    // Resume
+    examState.paused = false;
+    examState.startTime = Date.now();
+    examState.timerId = setInterval(updateExamTimer, 1000);
+    if(btn) btn.innerHTML = `⏸️ Pause`;
+    document.getElementById("content").classList.remove("exam-paused-overlay");
+  } else {
+    // Pause
+    examState.paused = true;
+    examState.accumulatedTime += (Date.now() - examState.startTime);
+    if (examState.timerId) {
+      clearInterval(examState.timerId);
+      examState.timerId = null;
+    }
+    if(btn) btn.innerHTML = `▶️ Resume`;
+    document.getElementById("content").classList.add("exam-paused-overlay");
+  }
+}
+
 function updateExamTimer() {
-  const elapsed = Math.floor((Date.now() - examState.startTime) / 1000);
+  const currentSessionTime = examState.paused ? 0 : Date.now() - examState.startTime;
+  const elapsed = Math.floor((examState.accumulatedTime + currentSessionTime) / 1000);
   const total = examState.testData.duration * 60;
   const remaining = Math.max(0, total - elapsed);
 
@@ -1197,7 +1228,8 @@ function confirmSubmit() {
 
 function submitExam() {
   if (examState.timerId) { clearInterval(examState.timerId); examState.timerId = null; }
-  const timeElapsed = Math.floor((Date.now() - examState.startTime) / 1000);
+  const currentSessionTime = examState.paused ? 0 : Date.now() - examState.startTime;
+  const timeElapsed = Math.floor((examState.accumulatedTime + currentSessionTime) / 1000);
   examState.active = false;
 
   // Mark this mock test as completed
@@ -1339,8 +1371,11 @@ function renderExamResults(testData, userAnswers, timeElapsed) {
 function cleanupExam() {
   if (examState.timerId) { clearInterval(examState.timerId); examState.timerId = null; }
   examState.active = false;
+  examState.paused = false;
+  examState.accumulatedTime = 0;
   examState.testData = null;
   examState.userAnswers = {};
+  document.getElementById("content").classList.remove("exam-paused-overlay");
   const bar = document.getElementById("exam-bar");
   if (bar) bar.remove();
   breadcrumbsEl.style.display = "";

@@ -1455,6 +1455,34 @@ body {
   white-space: nowrap;
 }
 
+.exam-bar-pause {
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+
+.exam-bar-pause:hover {
+  background: var(--bg-active);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.exam-paused-overlay {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.5;
+  transition: filter 0.3s, opacity 0.3s;
+}
+
 .exam-bar-submit {
   padding: 7px 18px;
   font-size: 13px;
@@ -2214,9 +2242,13 @@ body {
     font-size: 12px;
   }
 
-  .exam-bar-submit {
+  .exam-bar-submit,
+  .exam-bar-pause {
     padding: 6px 14px;
     font-size: 12px;
+  }
+
+  .exam-bar-submit {
     margin-left: auto;
   }
 
