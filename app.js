@@ -208,6 +208,12 @@ const AppState = (() => {
 
     // Completed
     isCompleted: (id) => !!_state.completed[id],
+    setCompleted: (id) => {
+      if (!_state.completed[id]) {
+        _state.completed[id] = Date.now();
+        save();
+      }
+    },
     toggleCompleted: (id) => {
       if (_state.completed[id]) delete _state.completed[id];
       else _state.completed[id] = Date.now();
